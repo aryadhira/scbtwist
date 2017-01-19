@@ -1,0 +1,191 @@
+<script>
+    app.currentDateData = '{{.CurrentDateData}}';
+</script>
+<script src="{{BaseUrl}}res/core/js/page-monitoring.js?ANTI_CACHE={{.AntiCache}}"></script>
+<link rel="stylesheet" type="text/css" href="{{BaseUrl}}res/core/css/page-monitoring.css">
+<link rel="stylesheet" type="text/css" href="{{BaseUrl}}res/core/css/page-filter-analytic.css">
+<div class="row">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 ez panel-content">
+            <div class="nav nav-pills nav-replace-title" style="padding-left: 5px;">
+                <div class="col-md-12 col-sm-12 filter-content">
+                    <div class="col-md-1 col-sm-1 time-info-div">
+                        <div class = "time-info"><span data-bind="text:monitoring.last_minute" ><span/></div>
+                        <span data-bind="text:monitoring.last_date" ><span/>
+                    </div>
+                    <label class="col-md-1 col-sm-1 control-label label-filter">Project</label>
+                    <select class="col-md-1 col-sm-1 project-list" id="projectList" name="table" data-bind="kendoDropDownList: { data: monitoring.projectList, dataValueField: 'value', dataTextField: 'text', optionLabel: 'All Projects', suggest: true }"
+                    style="width:145px"></select>&nbsp;
+                    <label class="col-md-1 col-sm-1 control-label label-filter" >Turbine</label>
+                    <select class="col-md-1 col-sm-1 turbine-list" id="turbineList" name="table" data-bind="kendoMultiSelect: { data: monitoring.turbineList(), dataValueField: 'value', dataTextField: 'text', change: function() {monitoring.checkTurbine()}, suggest: true }"
+                    style="width:250px">
+                    </select>&nbsp;
+                    <button class="btn btn-sm btn-primary" id="btnRefresh"><i class="fa fa-refresh"></i> Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 col-sm-12 ez panel-content">
+            <div class="col-md-12 col-sm-12 hardcore landing">
+                <div class="panel ez no-padding hardcore mb-5">
+                    <div class="panel-heading">      
+                        <div class="pull-right maximize-btn">
+                            <i class="fa fa-window-maximize tooltipster tooltipstered pull-right" aria-hidden="true" title="maximize screen" style="cursor: pointer;" id="max-screen"></i>
+                            <i class="fa fa-window-restore tooltipster tooltipstered pull-right" aria-hidden="true" title="restore screen" style="cursor: pointer;" id="restore-screen"></i>
+                            <i class="fa fa-bell tooltipster tooltipstered pull-right" aria-hidden="true" title="Notification" style="cursor: pointer;" data-toggle="control-sidebar"></i>
+                        </div>
+
+                    </div>
+                    <div class="panel-body">                        
+                        <div class="col-md-12 multicol-div">
+                            <div class="col-md-4 multicol" data-bind="foreach:monitoring.data">
+                                <table class="table table-condensed table-sum">
+                                    <thead>
+                                        <tr>
+                                            <td width="25%" data-bind="text:project"></td>
+                                            <td width="25%">Capacity(MW)</td>
+                                            <td width="25%">WS Avg.(m/s)</td>
+                                            <td width="25%">Prod(KWh)</td>
+                                        </tr>
+                                    </thead>
+                                     <tbody class="bold summary">
+                                        <tr>
+                                            <td> <span data-bind="text:kendo.toString(totalturbines,'n0')"></span></td>
+                                            <td> <span data-bind="text:kendo.toString(totalcap,'n1')"></span><!--/ <span class="green">50.4</span></td>-->
+                                            <td> <span data-bind="text:kendo.toString(totalwsavg,'n1')"><!--</span> / <span class="green">6</span></td>-->
+                                            <td> <span data-bind="text:kendo.toString(totalprod,'n1')"></span>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table class="table table-condensed table-detail table-striped">
+                                    <thead class="bold">
+                                        <tr>
+                                            <td width="20%">Timestamp</td>
+                                            <td width="20%">Turbine</td>
+                                            <td width="15%"><i class="fa fa-flash tooltipster tooltipstered" title="Production (KWh)"></i></td>
+                                            <td width="10%"><i class="fa fa-tachometer tooltipster tooltipstered" title="WS (m/s)"></i></td>
+                                            <td width="5%"><i class="fa fa-location-arrow tooltipster tooltipstered" title="Wind Direction"></i></td>
+                                            <td width="5%"><i class="fa fa-line-chart tooltipster tooltipstered" title="Rotor RPM"></i></td>
+                                            <td width="5%"><i class="fa fa-location-arrow tooltipster tooltipstered" title="Pitch Angle"></i></td>
+                                            <td width="5%"><i class="fa fa-bell tooltipster tooltipstered" title="Status"></i></td>
+                                            <td width="10%"><i class="fa fa-edit tooltipster tooltipstered" title="Status Code"></i></td>                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach:$data.turbines">
+                                        <tr>
+                                            <!--<td data-bind="text:kendo.toString(kendo.parseDate(timestamp), 'dd-mm-yyyy HH:mm')"></td>-->
+                                            <td data-bind="text:timestampstr"></td>
+                                            <td class="link-detail" data-bind="text:turbine, click: function(){ monitoring.showDetail($parent.project, turbine)}"></td>
+                                            <td >
+                                                <span data-bind="text:kendo.toString(production,'n1'), attr : { class: (production <= 0) ? 'red' : ''}"></span>/
+                                                <span data-bind="text:kendo.toString(todayproduction,'n1')" class="green"></span>
+                                            </td>
+                                            <td data-bind="text:kendo.toString(windspeed,'n1'), attr : { class: (windspeed <= 0) ? 'red' : ''}"></td>
+                                            <td data-bind="text:kendo.toString(winddirection,'n1')"></td>
+                                            <td data-bind="text:kendo.toString(rotorspeedrpm,'n1'), attr : { class: (windspeed <= 0) ? 'red' : ''}"></td>
+                                            <td data-bind="text:kendo.toString(pitchangle,'n1')"></td>
+                                            <td data-bind="attr : {class: (status == 'brake') ? 'fa fa-circle red tooltipster tooltipstered' : (status == 'N/A') ? 'fa fa-circle dim tooltipster tooltipstered' : 'fa fa-circle green tooltipster tooltipstered',title: statusdesc}"></td>
+                                            <td data-bind='text: (statuscode == "") ? "-" : statuscode'></td>
+                                            <td></td>                                          
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <hr>
+                            </div>
+                        </div>
+                        <br>
+                        <aside class="control-sidebar control-sidebar-light">
+                           <div class="col-md-12 details-title">
+                                <h4>Events</h4>
+                           </div>
+                           <div class="col-md-12">
+                                <table class='table borderless able table-condensed table-hover'>
+                                    <tbody data-bind="foreach:monitoring.event"> 
+                                        <tr data-bind="attr : {class: (Status == 'down') ? 'red' : 'green'}">
+                                            <td data-bind="text:TimeStampStr"></td>
+                                            <td data-bind="text:Project"></td>
+                                            <td class="link-detail" data-bind="text:Turbine, click: function(){ monitoring.showDetail(Project, Turbine)}"></td>
+                                            <td data-bind="attr : {class: (Status == 'down') ? 'fa fa-circle red tooltipster' : 'fa fa-circle green tooltipster',title: AlarmDescription}"></td>
+                                            <td data-bind="text:AlarmId"></td>
+                                            <td data-bind="text:(Status == 'up'? secondsToHms(Duration) : '')"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                           </div>
+                        </aside>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-lg fade" id="modalDetail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header"><h5>Turbine Detail for 24 Hours <storng>(<span data-bind="text:monitoring.selectedProject"></span> || <span data-bind="text:monitoring.selectedTurbine"></span>)</storng></h5></div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div>
+                                <div id="chartWindSpeed"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div>
+                                <div id="chartProduction"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div>
+                                <div id="dataAvailChart"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="col-md-12 col-xs-12 section-part">
+                            <label class="sector-label">Sectors</label>
+                            <select id="nosection" name="table" data-bind="kendoDropDownList: { data: wr.sectionsBreakdownList, dataValueField: 'value', dataTextField: 'text', suggest: true, change: wr.GetData }"
+                                style="width:50px;">
+                            </select>&nbsp;
+                            <label class="txtWar" data-bind="text: '&nbsp;&nbsp;Sector width : ' + wr.sectorDerajat() + ' °'">&nbsp;</label>
+                        </div>
+                        <div class="col-md-12 col-xs-12 legend-part">
+                            <div id="legend-list" class="col-md-12 col-sm-12 pl15">
+                            </div>
+                        </div>
+                        <div class="col-md-12" data-bind="foreach: wr.dataWindroseEachTurbine">
+                            <div data-bind="attr:{id: 'chart-' + Name}"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 detail-tbl">
+                        <table class='table borderless able table-condensed table-hover table-striped'>
+                            <tbody data-bind="foreach:monitoring.detailEvent"> 
+                                <tr data-bind="attr : {class: (Status == 'down') ? 'red' : 'green'}">
+                                    <td data-bind="text:TimeStampStr"></td>
+                                    <td data-bind="text:Project"></td>
+                                    <td data-bind="text:Turbine"></td>
+                                    <td data-bind="attr : {class: (Status == 'down') ? 'fa fa-circle red tooltipster' : 'fa fa-circle green tooltipster',title: AlarmDescription}"></td>
+                                    <td data-bind="text:AlarmId"></td>
+                                    <td data-bind="text:(Status == 'up'? secondsToHms(Duration) : '')"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-xs btn-danger" data-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    monitoring.populateTurbine({{.TurbineList}});
+    monitoring.populateProject({{.ProjectList}});
+</script>

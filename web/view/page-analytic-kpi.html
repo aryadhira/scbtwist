@@ -1,0 +1,115 @@
+<script>
+    app.currentDateData = '{{.CurrentDateData}}';
+</script>
+<script src="{{BaseUrl}}res/core/js/page-analytic-kpi.js?ANTI_CACHE={{.AntiCache}}"></script>
+<link rel="stylesheet" type="text/css" href="{{BaseUrl}}res/core/css/page-analytic-kpi.css">
+<div class="row">
+	{{template "_filter-analytic.html"}}
+	<div class="col-md-12 col-sm-12 ez panel-content">
+		<div class="col-md-12 col-sm-12 hardcore landing">
+			<div class="panel ez no-padding hardcore">
+				<div class="panel-heading">
+					<!-- KPI&nbsp; <i class="fa fa-question-circle tooltipster tooltipstered" aria-hidden="true" title="Information"></i>&nbsp;
+					| &nbsp;<span id="project-info"></span>&nbsp; <span id="total-turbine-info"></span> &nbsp;<span id="total-capacity-info"></span> -->
+					<div class="pull-right" style="margin-right:8px">
+						<span style="font-size:12px;"><b>Saved Views <i class="fa fa-question-circle tooltipster tooltipstered" aria-hidden="true" title="Saved views by the user, maximum 3 views for each user"></i></b></span>&nbsp;
+						<select class="form-control input-sm" id="savedViews"></select>
+						<button type="button" class="btn btn-sm btn-primary btn-filter-refresh" id="btnSaveView">Save</button>
+					</div>
+				</div>
+				<div class="panel-body">
+					<div class="date-info">
+                        Data Available from: <strong><span id="availabledatestartscada">-</span></strong> until: <strong><span id="availabledateendscada">-</span></strong>
+                    </div>
+                    <div class="clearfix">&nbsp;</div>
+					<div class="col-md-12 col-sm-12 list">
+						<label class="col-md-1 col-sm-1 control-label keyA-label">Key A</label>
+						<select class="col-md-1 col-sm-1" id="key1" name="table" data-bind="kendoDropDownList: { data: page.key1, dataValueField: 'value', dataTextField: 'text', suggest: true}"
+							onChange="page.checkKey()">
+                        </select>&nbsp;
+						<label class="col-md-1 col-sm-1 control-label keyB-label">Key B</label>
+						<select class="col-md-1 col-sm-1" id="key2" name="table" data-bind="kendoDropDownList: { data: page.key2, dataValueField: 'value', dataTextField: 'text', suggest: true}"
+							onChange="page.checkKey()">
+                        </select>&nbsp;
+						<label class="col-md-1 col-sm-1 control-label keyC-label">Key C</label>
+						<select class="col-md-1 col-sm-1" id="key3" name="table" data-bind="kendoDropDownList: { data: page.key3, dataValueField: 'value', dataTextField: 'text', suggest: true}"
+							onChange="page.checkKey()">
+                        </select>&nbsp;
+						<div class="pull-right" style="margin-right: -5px;">
+							<label class="col-md-2 col-sm-2 control-label column-breakdown">Column Breakdown</label>
+							<select class="col-md-1 col-sm-1 colBreak" id="columnsBreakdown" name="table" data-bind="kendoDropDownList: { data: [], dataValueField: 'value', dataTextField: 'text', value: page.columnsBreakdown}"
+								onchange="Data.LoadData()">
+                            </select>&nbsp;
+							<label class="col-md-2 col-sm-2 control-label row-breakdown">Row Breakdown</label>
+							<select class="col-md-1 col-sm-1 colBreak" id="rowsBreakdown" name="table" data-bind="kendoDropDownList: { data: [], dataValueField: 'value', dataTextField: 'text',value: page.rowsBreakdown}"
+								onchange="Data.LoadData()">
+                            </select>&nbsp;
+						</div>
+					</div>
+					<div class="clearfix">&nbsp;</div>
+					<div class="col-md-12">
+						<div id="gridKpiAnalysis" class="grid-custom"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade modal-fade-in-scale-up" id="modalForm" aria-hidden="true" aria-labelledby="modalTitle" role="dialog"
+	tabindex="-1" style="margin-top:20px">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+				<h4 class="modal-title" id="modal-views-title">Save / Update View</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-input row">
+					<div class="form-group col-md-12">
+						<label class="control-label col-md-4">Name</label>
+						<div class="control-input col-md-5">
+							<input type="text" id="inputViewName" name="inputViewName" class="input-sm form-control" placeholder="Type view name" required
+								data-required-msg="Model name required!" />
+							<span class="k-invalid-msg" data-for="inputViewName"></span>
+						</div>
+					</div>
+					<!--<div class="form-group col-md-12">
+                        <label class="control-label col-md-4">Key A</label>
+                        <div class="control-input col-md-5" id="inputKeyA">                            
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label class="control-label col-md-4">Key B</label>
+                        <div class="control-input col-md-5" id="inputKeyB">                            
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label class="control-label col-md-4">Key C</label>
+                        <div class="control-input col-md-5" id="inputKeyC">                            
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label class="control-label col-md-4">Column Breakdown</label>
+                        <div class="control-input col-md-5" id="inputColBreakdown">                            
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label class="control-label col-md-4">Row Breakdown</label>
+                        <div class="control-input col-md-5" id="inputRowBreakdown">                            
+                        </div>
+                    </div>-->
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-sm btn-default margin-0" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-sm btn-primary" onclick="page.saveView()">Save</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	fa.populateTurbine({{.TurbineList}});
+	fa.populateProject({{.ProjectList}});
+</script>
